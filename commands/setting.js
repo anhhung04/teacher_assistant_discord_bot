@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const data = new SlashCommandBuilder()
-.setName('roles') 
-.setDescription('Setting channel');
+.setName('setting') 
+.setDescription('Cài đặt bot');
 
 module.exports = {
 	data: data, 
