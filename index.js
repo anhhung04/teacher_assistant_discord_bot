@@ -8,7 +8,13 @@ const client = new Client({
         Intents.FLAGS.DIRECT_MESSAGES,
         Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
         Intents.FLAGS.GUILD_VOICE_STATES,
-        Intents.FLAGS.GUILD_BANS
+        Intents.FLAGS.GUILD_BANS,
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_INVITES,
+        Intents.FLAGS.GUILD_PRESENCES,
+        Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Intents.FLAGS.GUILD_SCHEDULED_EVENTS,
+        Intents.FLAGS.GUILD_WEBHOOKS
     ],
     partials: [
     "CHANNEL"
@@ -17,9 +23,9 @@ const client = new Client({
 require('dotenv').config();
 const token = process.env.TOKEN;
 const fs = require('fs');
-// const mongoose = require('mongoose');
-// const urlDB = process.env.urlDB;
-// mongoose.connect(urlDB).then(()=> console.log('Connected to database!')).catch(err => console.log(err));
+const mongoose = require('mongoose');
+const urlDB = process.env.urlDB;
+mongoose.connect(urlDB).then(()=> console.log('Connected to database!')).catch(err => console.log(err));
 
 
 client.commands = new Collection();
@@ -28,6 +34,14 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.data.name, command);
+}
+
+client.modals = new Collection();
+const modalFiles = fs.readdirSync('./modals').filter(file => file.endsWith('.js'));
+
+for (const file of modalFiles) {
+	const modal = require(`./modals/${file}`);
+	client.modals.set(modal.name, modal);
 }
 
 
