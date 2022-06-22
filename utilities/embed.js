@@ -1,6 +1,6 @@
 const {MessageEmbed} = require('discord.js');
 
-module.exports = async function(color = 'BLUE', title=null, description=null, fields, thumbnailLink=null, imageLink=null){
+module.exports = async function(color = 'BLUE', title=null, description=null, fields, thumbnailLink=null, imageLink=null, author){
     var embed = new MessageEmbed().setTimestamp().setColor(color);
 
     if(title&&typeof(title)==='string'){
@@ -21,6 +21,12 @@ module.exports = async function(color = 'BLUE', title=null, description=null, fi
 
     if(thumbnailLink&&typeof(thumbnailLink)==='string'){
         embed.setThumbnail(thumbnailLink);
+    }
+
+    try{
+        embed.setAuthor(author);
+    }catch(err){
+        console.log(err);
     }
 
     return embed;

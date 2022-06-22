@@ -7,6 +7,9 @@ const data = new SlashCommandBuilder()
 module.exports = {
 	data: data, 
 	async execute(interaction) {
-       return;
+		if(!interaction.memberPermissions.any(Permissions.FLAGS.ADMINISTRATOR)) return interaction.reply({
+			content: 'Bạn không phải admin để thực hiện lệnh này',
+			ephemeral: true
+		});
 	} 
 }; 
