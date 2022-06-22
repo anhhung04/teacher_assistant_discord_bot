@@ -1,5 +1,5 @@
 const memberModel = require('../models/member.js');
-
+const guildModel = require('../models/guild.js');
 
 module.exports = {
     name: 'add_student',
@@ -16,7 +16,13 @@ module.exports = {
         });
         console.log(newMember);
 
-        await newMember.save();
+        newMember = await newMember.save();
+
+        await guildModel.findOneAndUpdate({
+            guildId: interaction.guildId
+        },{
+            $push: {members: newMember._id}
+        });
 
         return interaction.reply({content: 'Câu trả lời đã được ghi nhận, học sinh này có thể vào được máy chủ!', ephemeral: true });
     }

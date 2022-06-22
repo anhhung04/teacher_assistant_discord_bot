@@ -10,7 +10,11 @@ const memberSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    subjects: [String]
+    subjects: [String],
+    guild:{
+        type: mongoose.Types.ObjectId,
+        ref: 'Guild'
+    }
 });
 
 const memberModel = new mongoose.model('Member', memberSchema);

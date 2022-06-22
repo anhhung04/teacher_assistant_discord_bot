@@ -39,6 +39,6 @@ module.exports = {
 
 		modal.addComponents(row, row2, row3);
 
-		await interaction.showModal(modal);
+		return interaction.showModal(modal);
 	} 
 }; 
