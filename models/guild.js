@@ -9,8 +9,9 @@ const guildSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'Member'
     }],
-    ask_channel: String,
-    submit_channel: String
+    reply_channel: String,
+    submit_channel: String,
+    noti_channel: String
 });
 
 const guildModel = new mongoose.model('Guild', guildSchema);

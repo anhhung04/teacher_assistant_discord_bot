@@ -15,18 +15,18 @@ module.exports = {
         const topic = interaction.options.getString('topic');
         const question = interaction.options.getString('question');
         
-        if(!guildDB.ask_channel) return interaction.reply({
+        if(!guildDB.reply_channel) return interaction.reply({
                content: 'Chưa cài đặt kênh trả lời câu hỏi, vui lòng liên hệ admin',
                ephemeral: true
         });
 
-        const askChannel = await interaction.guild.channels.fetch(guildDB.ask_channel||'988998582508064859');
+        const replyChannel = await interaction.guild.channels.fetch(guildDB.reply_channel||'988998582508064859');
         const author = {
             name: interaction.member.displayName,
             iconURL: interaction.member.displayAvatarURL()
         };
 
-        const askMess = await askChannel.send({
+        const askMess = await replyChannel.send({
             embeds: [await embed('BLUE', topic, null, [{name: question, value: '\u200B'}], null, null, author)]
         });
 

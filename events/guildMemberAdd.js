@@ -6,7 +6,14 @@ module.exports = {
         const memberDB = await memberModel.findOne({guildId: member.guild.id, discordId: member.id});
 
         if(memberDB){
+            var roles = await member.guild.roles.cache;
+            roles = roles.filter(role => memberDB.subjects.includes(role.name));
+            
             await member.setNickname(memberDB.name);
+            await member.edit({
+                roles: roles
+            });
+            
             return;
         }
 

@@ -11,6 +11,7 @@ const memberSchema = new mongoose.Schema({
         require: true
     },
     subjects: [String],
+    attendance: [Number],
     guild:{
         type: mongoose.Types.ObjectId,
         ref: 'Guild'

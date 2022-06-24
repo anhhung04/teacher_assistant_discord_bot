@@ -8,7 +8,7 @@ module.exports = {
         const idDiscord = interaction.fields.getTextInputValue('idDiscord');
         const subjects = interaction.fields.getTextInputValue('subjects').split(',').map(e => e.trim().toLowerCase());
         
-        const newMember = new memberModel({
+        var newMember = new memberModel({
             guildId: interaction.guildId,
             name: name,
             discordId: idDiscord,
