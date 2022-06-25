@@ -60,8 +60,6 @@ module.exports ={
         .setAuthor({name: interaction.member.displayName, iconURL: interaction.member.displayAvatarURL()})
         .setTitle(`Lớp học chuyên đề ${topic} đã bắt đầu`)
         .addField(`${interaction.member.displayName} phụ trách:\n${name}`, hyperlink('Bấm để tham gia', invite));
-        
-        await interaction.member.voice.setChannel(studyChannel);
 
         await classModel.create({
             guildId: interaction.guildId,
@@ -70,12 +68,12 @@ module.exports ={
             teacher: interaction.member.displayName,
             roomId: studyChannel.id
         });
-
         
-
         await notiChannel.send({
             embeds: [embedSend]
         });
+
+        await interaction.member.voice.setChannel(studyChannel);
 
         return interaction.editReply({
             content: 'Đã khởi tạo lớp học',

@@ -12,7 +12,8 @@ module.exports = {
             guildId: interaction.guildId,
             name: name,
             discordId: idDiscord,
-            subjects: subjects
+            subjects: subjects,
+            attendance: new Array(subjects.length).fill(0)
         });
         console.log(newMember);
 

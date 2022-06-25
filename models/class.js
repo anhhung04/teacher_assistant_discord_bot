@@ -11,7 +11,10 @@ const classSchema = new mongoose.Schema({
     index: {
         type: Number,
         require: true
-    },members:[String],
+    },members:[{
+        type: mongoose.Types.ObjectId,
+        ref: 'Member'
+    }],
     teacher: {
         type: String,
         require: true

@@ -1,6 +1,6 @@
-module.exports ={
-    name: 'test',
-    async execute(mess){
-        return mess.member.voice.channel.messages.channel.send('test successfully')
-    }
-}
+module.exports = {
+    name: "test.js",
+    execute(message, args) {
+        return message.reply("template command")
+    },
+};
