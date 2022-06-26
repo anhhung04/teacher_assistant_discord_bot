@@ -63,14 +63,12 @@ module.exports = {
             });
         });
 
-        const homeworkDB = new homeworkModel({
+        await homeworkModel.create({
             guildId: interaction.guildId,
             messageId: mess.id,
             author: interaction.member.displayName,
             authorId: interaction.member.id
         });
-
-        await homeworkDB.save();
 
         return interaction.reply({
             content: `Đã nộp bài tập thành công.`,
