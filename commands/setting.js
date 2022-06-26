@@ -20,6 +20,10 @@ const data = new SlashCommandBuilder()
 		opt.setName('notification_channel')
 		.setDescription('Cài đặt kênh thông báo')
 	)
+	.addChannelOption(opt =>
+		opt.setName('homework_channel')
+		.setDescription('Kênh hiển thị bài tập do học sinh nộp.')
+	)
 );
 
 module.exports = {
@@ -35,11 +39,12 @@ module.exports = {
 		const replyChannel = interaction.options.getChannel('reply_channel');
 		const submitChannel = interaction.options.getChannel('submit_channel');
 		const notiChannel = interaction.options.getChannel('notification_channel');
+		const homeworkChannel = interaction.options.getChannel('homework_channel');
 
 		if(replyChannel){
 			guildDB.reply_channel = replyChannel.id;
 		}
-
+		
 		if(submitChannel){
 			guildDB.submit_channel = submitChannel.id;
 		}
@@ -48,9 +53,13 @@ module.exports = {
 			guildDB.noti_channel = notiChannel.id;
 		}
 
+		if(homeworkChannel){
+			guildDB.homework_channel = homeworkChannel.id;
+		}
+
 		await guildDB.save();
 
-		return interaction.reply({
+		await interaction.reply({
 			content: `Đã cài đặt thành công`,
 			ephemeral: true
 		});

@@ -11,7 +11,8 @@ const guildSchema = new mongoose.Schema({
     }],
     reply_channel: String,
     submit_channel: String,
-    noti_channel: String
+    noti_channel: String,
+    homework_channel: String
 });
 
 const guildModel = new mongoose.model('Guild', guildSchema);

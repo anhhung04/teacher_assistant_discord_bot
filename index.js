@@ -14,7 +14,8 @@ const client = new Client({
         Intents.FLAGS.GUILD_PRESENCES,
         Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
         Intents.FLAGS.GUILD_SCHEDULED_EVENTS,
-        Intents.FLAGS.GUILD_WEBHOOKS
+        Intents.FLAGS.GUILD_WEBHOOKS,
+        Intents.FLAGS.GUILD_INTEGRATIONS
     ],
     partials: [
     "CHANNEL"

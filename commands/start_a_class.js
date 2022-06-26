@@ -6,7 +6,7 @@ const classModel = require('../models/class.js');
 const data = new SlashCommandBuilder()
 .setName('start_a_class') 
 .setDescription('Bắt đầu 1 buổi học')
-.addStringOption(opt => opt.setName('thematic').setDescription('Chuyên đề sẽ dạy').setRequired(true).addChoices(['cơ học', 'điện từ học', 'nhiệt học', 'quang học', 'vật lí hiện đại'].map(e => [e,e])))
+.addStringOption(opt => opt.setName('thematic').setDescription('Chuyên đề sẽ dạy').setRequired(true).addChoices(...['cơ học', 'điện từ học', 'nhiệt học', 'quang học', 'vật lí hiện đại'].map(e => ({name: e, value:e}))))
 .addStringOption(opt => opt.setName('name').setDescription('Tên của bài học sẽ dạy').setRequired(true))
 .addIntegerOption(opt => opt.setName('index').setDescription('Thứ tự buổi dạy').setRequired(true));
 
