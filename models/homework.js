@@ -15,9 +15,12 @@ const homeworkSchema = new mongoose.Schema({
     authorId: {
         type: String,
         require: true
-    }
+    },
+    comment:String,
+    examinerId: String,
+    linkCorrection: String
 });
 
-const homeworkModel = new mongoose.Schema('Homework', homeworkSchema);
+const homeworkModel = new mongoose.model('Homework', homeworkSchema);
 
 module.exports = homeworkModel;

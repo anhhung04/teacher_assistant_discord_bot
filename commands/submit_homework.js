@@ -1,5 +1,5 @@
 const { SlashCommandBuilder} = require('@discordjs/builders');
-const {MessageActionRow, MessageButton} = require('discord.js');
+const {MessageActionRow, MessageButton, Modal, TextInputComponent} = require('discord.js');
 const guildModel = require('../models/guild.js');
 const embed = require('../utilities/embed.js');
 const homeworkModel = require('../models/homework.js');
@@ -36,6 +36,14 @@ module.exports = {
         const row = new MessageActionRow()
         .addComponents(
             new MessageButton()
+            .setCustomId('pending')
+            .setLabel('Đang chấm')
+            .setStyle('PRIMARY'),
+            new MessageButton()
+            .setCustomId('comment_button')
+            .setLabel('Nhận xét')
+            .setStyle('DANGER'),
+            new MessageButton()
             .setCustomId('finish')
             .setLabel('Đã chấm')
             .setStyle('SUCCESS')
@@ -48,18 +56,83 @@ module.exports = {
         });
 
         const collector = await mess.createMessageComponentCollector({
-            filter: (interaction) => interaction.customId === 'finish' && interaction.member.roles.highest.name === 'Tutor', 
+            filter: (interaction) => ['finish', 'pending', 'comment_button'].includes(interaction.customId)&& interaction.member.roles.highest.name === 'Tutor', 
             componentType: 'BUTTON'   
         });
 
-        collector.on('collect', i =>{
+        collector.on('collect', async i =>{
             let embed = i.message.embeds.shift();
-            let title = embed.title;
-            embed.setTitle(`${title} (đã chấm)`).setColor('GREEN');
-            collector.stop();
+            let modal = new Modal()
+            .setCustomId('comment_homework')
+            .setTitle('Nhận xét bài tập')
+            .addComponents(
+                new MessageActionRow()
+                .addComponents(
+                    new TextInputComponent()
+                    .setCustomId('link')
+                    .setLabel('Link bài sửa: ')
+                    .setStyle('SHORT')
+                ), new MessageActionRow()
+                .addComponents(
+                    new TextInputComponent()
+                    .setCustomId('comment')
+                    .setLabel('Nhận xét bài làm')
+                    .setStyle('PARAGRAPH')           
+                )   
+            );
+
+            switch(i.customId){
+                case 'finish':{
+                    let homeworkDB = await homeworkModel.findOne({guildId: i.guildId, messageId: i.message.id});
+
+                    if(!homeworkDB.comment)
+                    {
+                        return i.reply({
+                            content: 'Bài tập này chưa được nhận xét',
+                            ephemeral: true
+                        });
+                    }
+
+                    if(homeworkDB.examinerId!==i.member.id){
+                        return i.reply({
+                            content: 'Bạn không phải người chấm bài này',
+                            ephemeral: true
+                        });
+                    }
+
+                    await i.reply({
+                        content: 'Hệ thống đã nhận bài sửa',
+                        ephemeral: true
+                    });
+
+                    let title = embed.title.split('#')[0];
+                    embed.setTitle(`${title} #(đã chấm)`).setColor('GREEN');
+
+                    collector.stop();
+
+                    return i.message.edit({
+                        embeds: [embed],
+                        components: []
+                    });
+                }
+                case 'pending':{
+                    await homeworkModel.findOneAndUpdate({guildId: i.guildId, messageId: i.message.id}, {examinerId: i.member.id});
+
+                    await i.reply({
+                        content: `Đã ghi nhận ${i.member.user} sẽ chấm bài tập này`
+                    });
+
+                    let title = embed.title.split('#')[0];
+                    embed.setTitle(`${title} #(đang chấm bởi ${i.member.displayName})`).setColor('BLUE');
+                    break;        
+                }
+                case 'comment_button':{
+                    return i.showModal(modal);
+                }
+            }
+
             return i.message.edit({
                 embeds: [embed],
-                components: []
             });
         });
 
