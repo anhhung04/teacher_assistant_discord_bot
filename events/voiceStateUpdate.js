@@ -15,7 +15,7 @@ module.exports = {
             stopWatch(oldState.member.id);
         }
 
-        if(oldState.channel.members.size===0&&classDB) {
+        if(oldState?.channel?.members.size===0&&classDB) {
             let {topic} = classDB;
             let oldClassMembers = classDB.members;
             
