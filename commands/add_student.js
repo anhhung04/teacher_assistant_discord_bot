@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const {MessageActionRow, Modal, TextInputComponent, MessageSelectMenu, Permissions } = require('discord.js');
+const {MessageActionRow, Modal, TextInputComponent, Permissions } = require('discord.js');
 
 const data = new SlashCommandBuilder()
 .setName('add_student') 
