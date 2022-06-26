@@ -22,6 +22,8 @@ function isPDF(url){
 module.exports = {
     data: data,
     async execute(interaction){
+
+        await interaction.deferReply({ephemeral: true});
         const guildDB = await guildModel.findOne({guildId: interaction.guildId});
         const checkHomeworkChannel = await interaction.guild.channels.fetch(guildDB.homework_channel)
         const homeworkChannel = checkHomeworkChannel||interaction.channel;
@@ -143,7 +145,7 @@ module.exports = {
             authorId: interaction.member.id
         });
 
-        return interaction.reply({
+        return interaction.editReply({
             content: `Đã nộp bài tập thành công.`,
             ephemeral: true
         });
