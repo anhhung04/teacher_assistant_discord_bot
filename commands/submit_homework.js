@@ -68,6 +68,17 @@ module.exports = {
             componentType: 'BUTTON'   
         });
 
+        await homeworkModel.create({
+            guildId: interaction.guildId,
+            messageId: mess.id,
+            author: interaction.member.displayName,
+            authorId: interaction.member.id,
+            status: 'not_seen',
+            name: name,
+            createAt: Date.now(),
+            channelSendId: homeworkChannel.id
+        });
+
         collector.on('collect', async i =>{
             let embed = i.message.embeds.shift();
             let modal = new Modal()
@@ -77,7 +88,7 @@ module.exports = {
                 new MessageActionRow()
                 .addComponents(
                     new TextInputComponent()
-                    .setCustomId('link')
+                    .setCustomId('link_comment')
                     .setLabel('Link bài sửa: ')
                     .setStyle('SHORT')
                 ), new MessageActionRow()
@@ -108,24 +119,31 @@ module.exports = {
                         });
                     }
 
+                    homeworkDB.status = 'finish';
+
+                    await homeworkDB.save();
+
                     await i.reply({
-                        content: 'Hệ thống đã nhận bài sửa',
+                        content: 'Hệ thống ghi nhận bài tập đã được chấm',
                         ephemeral: true
                     });
 
                     let title = embed.title.split('#')[0];
+
                     embed.setTitle(`${title} #(đã chấm)`).setColor('GREEN');
+
+                    if(imageLink) embed.setImage(`attachment://${imageLink}`);
 
                     collector.stop();
 
                     return i.message.edit({
                         embeds: [embed],
                         components: [],
-                        files: imageLink?[]:fileSend
+                        files: fileSend
                     });
                 }
                 case 'pending':{
-                    await homeworkModel.findOneAndUpdate({guildId: i.guildId, messageId: i.message.id}, {examinerId: i.member.id});
+                    await homeworkModel.findOneAndUpdate({guildId: i.guildId, messageId: i.message.id}, {examinerId: i.member.id, status: 'pending'});
 
                     await i.reply({
                         content: `Đã ghi nhận ${i.member.user} sẽ chấm bài tập này`
@@ -140,17 +158,12 @@ module.exports = {
                 }
             }
 
+            if(imageLink) embed.setImage(`attachment://${imageLink}`);
+
             return i.message.edit({
                 embeds: [embed],
-                files: imageLink?[]:fileSend
+                files: fileSend
             });
-        });
-
-        await homeworkModel.create({
-            guildId: interaction.guildId,
-            messageId: mess.id,
-            author: interaction.member.displayName,
-            authorId: interaction.member.id
         });
 
         return interaction.editReply({

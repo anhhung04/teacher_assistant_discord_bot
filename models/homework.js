@@ -18,7 +18,19 @@ const homeworkSchema = new mongoose.Schema({
     },
     comment:String,
     examinerId: String,
-    linkCorrection: String
+    linkCorrection: String,
+    status: String,
+    name: {
+        type: String,
+        require: true
+    },
+    createAt: {
+        type: Number,
+        require: true
+    },channelSendId: {
+        type: String,
+        require: true
+    }
 });
 
 const homeworkModel = new mongoose.model('Homework', homeworkSchema);

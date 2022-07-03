@@ -1,9 +1,6 @@
 const cooldowns = new Map();
-function isImage(url) {
-    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
-  }
 const homeworkModel = require('../models/homework.js');  
-
+const {MessageActionRow, Modal, TextInputComponent} = require('discord.js');
 
 module.exports = {
 	name: 'interactionCreate',
@@ -21,6 +18,93 @@ module.exports = {
                 console.error(error);
                 await interaction.reply({ content: 'Đã có lỗi xảy ra!', ephemeral: true });
            }
+        }
+
+        if(interaction.isButton()&&['pending', 'finish', 'comment_button'].includes(interaction.customId)){
+            let embed = interaction.message.embeds.shift();
+            let modal = new Modal()
+            .setCustomId('comment_homework')
+            .setTitle('Nhận xét bài tập')
+            .addComponents(
+                new MessageActionRow()
+                .addComponents(
+                    new TextInputComponent()
+                    .setCustomId('link_comment')
+                    .setLabel('Link bài sửa: ')
+                    .setStyle('SHORT')
+                ), new MessageActionRow()
+                .addComponents(
+                    new TextInputComponent()
+                    .setCustomId('comment')
+                    .setLabel('Nhận xét bài làm')
+                    .setStyle('PARAGRAPH')           
+                )   
+            );
+            let imageLink = interaction.message?.embeds[0]?.image?interaction.message.embeds[0].image.url.split('/').pop():null;
+            let fileSend = imageLink?[interaction.message.embeds[0].image.url]:[interaction.message.attachments?.cache.first().url];
+
+            switch(interaction.customId){
+                case 'finish':{
+                    let homeworkDB = await homeworkModel.findOne({guildId: interaction.guildId, messageId: interaction.message.id});
+
+                    if(!homeworkDB.comment)
+                    {
+                        return interaction.reply({
+                            content: 'Bài tập này chưa được nhận xét',
+                            ephemeral: true
+                        });
+                    }
+
+                    if(homeworkDB.examinerId!==interaction.member.id){
+                        return interaction.reply({
+                            content: 'Bạn không phải người chấm bài này',
+                            ephemeral: true
+                        });
+                    }
+
+                    homeworkDB.status = 'finish';
+
+                    await homeworkDB.save();
+
+                    await interaction.reply({
+                        content: 'Hệ thống ghi nhận bài tập đã được chấm',
+                        ephemeral: true
+                    });
+
+                    let title = embed.title.split('#')[0];
+
+                    embed.setTitle(`${title} #(đã chấm)`).setColor('GREEN');
+
+                    if(imageLink) embed.setImage(`attachment://${imageLink}`);
+
+                    return interaction.message.edit({
+                        embeds: [embed],
+                        components: [],
+                        files: fileSend
+                    });
+                }
+                case 'pending':{
+                    await homeworkModel.findOneAndUpdate({guildId: interaction.guildId, messageId: interaction.message.id}, {examinerId: interaction.member.id, status: 'pending'});
+
+                    await interaction.reply({
+                        content: `Đã ghi nhận ${interaction.member.user} sẽ chấm bài tập này`
+                    });
+
+                    let title = embed.title.split('#')[0];
+                    embed.setTitle(`${title} #(đang chấm bởi ${interaction.member.displayName})`).setColor('BLUE');
+                    break;        
+                }
+                case 'comment_button':{
+                    return interaction.showModal(modal);
+                }
+            }
+
+            if(imageLink) embed.setImage(`attachment://${imageLink}`);
+
+            return interaction.message.edit({
+                embeds: [embed],
+                files: fileSend
+            });
         }
         
 		if (!interaction.isCommand()) return;

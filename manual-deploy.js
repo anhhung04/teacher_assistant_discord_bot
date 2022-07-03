@@ -25,10 +25,9 @@ const client = new Client({
     ]
 });
 
-const getServerAndDeploy = function(){
+function getServerAndDeploy(){
     let findGuild = new Promise((resolve, reject)=>{
         let guilds = client.guilds.cache.toJSON();
-        console.log(client.guilds)
         if(guilds){
             resolve(guilds);
         }else{
