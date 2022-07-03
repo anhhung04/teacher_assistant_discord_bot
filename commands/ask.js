@@ -6,7 +6,13 @@ const data = new SlashCommandBuilder()
 .setName('ask') 
 .setDescription('Đặt câu hỏi')
 .addStringOption(option => option.setName('topic').setDescription('Chủ đề của vấn đề bạn muốn hỏi.').setRequired(true))
-.addStringOption(option => option.setName('question').setDescription('Nội dung cần hỏi').setRequired(true));
+.addStringOption(option => option.setName('question').setDescription('Nội dung cần hỏi').setRequired(true))
+.addAttachmentOption(option => option.setName('attachment').setDescription('File đính kèm mô tả câu hỏi'));
+
+function isImage(url) {
+    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+  
+}
 
 module.exports = {
 	data: data, 
@@ -14,6 +20,7 @@ module.exports = {
         const guildDB = await guildModel.findOne({guildId: interaction.guildId});
         const topic = interaction.options.getString('topic');
         const question = interaction.options.getString('question');
+        const fileURL = interaction.options.getAttachment('attachment');
         
         if(!guildDB.reply_channel) return interaction.reply({
                content: 'Chưa cài đặt kênh trả lời câu hỏi, vui lòng liên hệ admin',
@@ -26,8 +33,10 @@ module.exports = {
             iconURL: interaction.member.displayAvatarURL()
         };
 
+        const imageLink = isImage(fileURL)?fileURL:null;
+
         const askMess = await replyChannel.send({
-            embeds: [await embed('BLUE', topic, null, [{name: question, value: '\u200B'}], null, null, author)]
+            embeds: [await embed('BLUE', topic, null, [{name: question, value: '\u200B'}], null, fileURL, author)]
         });
 
         await askMess.startThread({
