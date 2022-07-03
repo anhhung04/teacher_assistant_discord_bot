@@ -7,6 +7,15 @@ module.exports = {
         const name = interaction.fields.getTextInputValue('name');
         const idDiscord = interaction.fields.getTextInputValue('idDiscord');
         const subjects = interaction.fields.getTextInputValue('subjects').split(',').map(e => e.trim().toLowerCase());
+
+        const checkMember = await memberModel.findOne({guildId: interaction.guildId, discordId: idDiscord});
+
+        if(checkMember){
+            return interaction.reply({
+                content: 'Học sinh này đã được thêm vào hệ thống',
+                ephemeral: true
+            });
+        }
         
         var newMember = new memberModel({
             guildId: interaction.guildId,
