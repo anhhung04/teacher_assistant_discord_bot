@@ -136,7 +136,7 @@
     "save": "^2.4.0"
   },
   "scripts": {
-    "test": "node index.js"
+    "test": "node bot.js"
   },
   "author": "AnhHung",
   "license": "ISC"
