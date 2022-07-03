@@ -1,6 +1,6 @@
 const classModel = require('../models/class.js');
 const memberModel = require('../models/member.js');
-const {startVoiceTimer, resumeWatch, getTime, stopWatch, resetTime, logTime} = require('../utilities/voiceTimer.js');
+const {startVoiceTimer, resumeWatch, getTime, stopWatch, resetTime} = require('../utilities/voiceTimer.js');
 
 module.exports = {
     name: 'voiceStateUpdate',
@@ -22,11 +22,12 @@ module.exports = {
             for(let i=0; i< oldClassMembers.length; i++){
                 let memberDB = await memberModel.findOne({_id: oldClassMembers[i]._id});
                 let indexOfSub = memberDB.subjects.indexOf(topic);
-                if(getTime(memberDB.discordId)>60*1000){
+                if(getTime(memberDB.discordId)>=150*60*1000){
                     memberDB.attendance[indexOfSub]++;
                 }
-                logTime(memberDB.discordId)
+                classDB.timeInRoom[i] = getTime(memberDB.discordId)/60000;
                 resetTime(memberDB.discordId);
+                await classDB.save()
                 await memberDB.save();
             }
 
@@ -40,6 +41,7 @@ module.exports = {
                 startVoiceTimer(userId);
                 const memberDB = await memberModel.findOne({guildId: newState.guild.id, discordId: userId});
                 newClassDB.members.push(memberDB._id);
+                newClassDB.timeInRoom.push(0);
                 return newClassDB.save();
             }
         }

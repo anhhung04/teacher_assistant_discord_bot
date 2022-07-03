@@ -14,6 +14,8 @@ const classSchema = new mongoose.Schema({
     },members:[{
         type: mongoose.Types.ObjectId,
         ref: 'Member'
+    }],timeInRoom:[{
+        type: Number
     }],
     teacher: {
         type: String,
