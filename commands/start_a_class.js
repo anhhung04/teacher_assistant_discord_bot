@@ -68,8 +68,11 @@ module.exports ={
             teacher: interaction.member.displayName,
             roomId: studyChannel.id
         });
+
+        let role = await interaction.guild.roles.cache.find(r => r.name === topic);
         
         await notiChannel.send({
+            content: `${role}`,
             embeds: [embedSend]
         });
 

@@ -24,7 +24,6 @@ module.exports = {
             subjects: subjects,
             attendance: new Array(subjects.length).fill(0)
         });
-        console.log(newMember);
 
         newMember = await newMember.save();
 

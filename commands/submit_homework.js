@@ -100,9 +100,10 @@ module.exports = {
                 )   
             );
 
+            let homeworkDB = await homeworkModel.findOne({guildId: i.guildId, messageId: i.message.id});
+
             switch(i.customId){
                 case 'finish':{
-                    let homeworkDB = await homeworkModel.findOne({guildId: i.guildId, messageId: i.message.id});
 
                     if(!homeworkDB.comment)
                     {
@@ -124,7 +125,7 @@ module.exports = {
                     await homeworkDB.save();
 
                     await i.reply({
-                        content: 'Hệ thống ghi nhận bài tập đã được chấm',
+                        content: `Hệ thống ghi nhận bài tập ${homeworkDB.name} do ${homeworkDB.author} nộp đã được chấm`,
                         ephemeral: true
                     });
 
@@ -145,8 +146,21 @@ module.exports = {
                 case 'pending':{
                     await homeworkModel.findOneAndUpdate({guildId: i.guildId, messageId: i.message.id}, {examinerId: i.member.id, status: 'pending'});
 
+                    if(homeworkDB.examinerId){
+                        if(homeworkDB.examinerId!=i.member.id){
+                            return i.reply({
+                                content: 'Bài tập này đã có người chấm!',
+                                ephemeral: true
+                            });
+                        }
+                    }
+
+                    homeworkDB.examinerId = i.member.id;
+
+                    await homeworkDB.save();
+
                     await i.reply({
-                        content: `Đã ghi nhận ${i.member.user} sẽ chấm bài tập này`
+                        content: `Đã ghi nhận ${i.member.user} sẽ chấm bài tập ${homeworkDB.name} do ${homeworkDB.author} nộp.`
                     });
 
                     let title = embed.title.split('#')[0];

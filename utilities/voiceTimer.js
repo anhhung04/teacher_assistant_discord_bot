@@ -22,6 +22,9 @@ module.exports ={
         let oldTime = timers.get(userId);
         let now = Date.now();
         timers.set(userId, now-oldTime);
+    },
+    logTime(userId){
+        console.log(timers.get(userId));
     }
 
 }
