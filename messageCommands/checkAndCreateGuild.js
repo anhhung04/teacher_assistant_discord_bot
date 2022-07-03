@@ -2,7 +2,7 @@ const guildModel = require('../models/guild.js');
 
 module.exports = {
     name: "checkAndCreateGuild",
-    execute(message, args) {
+    async execute(message, args) {
         const guildDB = await guildModel.findOne({guildId: message.guildId});
 
         if(guildDB){
