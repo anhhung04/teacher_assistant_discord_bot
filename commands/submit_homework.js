@@ -31,7 +31,9 @@ module.exports = {
         const fileURL = interaction.options.getAttachment('file');
         const name = interaction.options.getString('name');
 
-        const imageLink = isImage(fileURL)?fileURL:null;
+        var fileSend = [];
+
+        const imageLink = isImage(fileURL?.url)?fileURL.name:null;
 
         const embedSend = await embed('RED', name, null, null, null, imageLink, {name: interaction.member.displayName, iconURL: interaction.member.displayAvatarURL()});
 
@@ -51,9 +53,13 @@ module.exports = {
             .setStyle('SUCCESS')
         );
 
+        if(fileURL){
+            fileSend.push(fileURL);
+        }
+
         const mess = await homeworkChannel.send({
             embeds: [embedSend],
-            files: [fileURL],
+            files: fileSend,
             components: [row]
         });
 
@@ -114,7 +120,8 @@ module.exports = {
 
                     return i.message.edit({
                         embeds: [embed],
-                        components: []
+                        components: [],
+                        files: imageLink?[]:fileSend
                     });
                 }
                 case 'pending':{
@@ -135,6 +142,7 @@ module.exports = {
 
             return i.message.edit({
                 embeds: [embed],
+                files: imageLink?[]:fileSend
             });
         });
 

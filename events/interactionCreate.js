@@ -1,4 +1,8 @@
 const cooldowns = new Map();
+function isImage(url) {
+    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+  }
+const homeworkModel = require('../models/homework.js');  
 
 
 module.exports = {
@@ -18,7 +22,7 @@ module.exports = {
                 await interaction.reply({ content: 'Đã có lỗi xảy ra!', ephemeral: true });
            }
         }
-
+        
 		if (!interaction.isCommand()) return;
 
         const command = interaction.client.commands.get(interaction.commandName);

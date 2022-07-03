@@ -11,45 +11,46 @@ const client = new Client({
         Intents.FLAGS.DIRECT_MESSAGES,
         Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
         Intents.FLAGS.GUILD_VOICE_STATES,
-        Intents.FLAGS.GUILD_BANS
+        Intents.FLAGS.GUILD_BANS,
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_INVITES,
+        Intents.FLAGS.GUILD_PRESENCES,
+        Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Intents.FLAGS.GUILD_SCHEDULED_EVENTS,
+        Intents.FLAGS.GUILD_WEBHOOKS,
+        Intents.FLAGS.GUILD_INTEGRATIONS
     ],
     partials: [
     "CHANNEL"
     ]
 });
 
-const readline = require('readline');
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-client.login(token);
-
 const getServerAndDeploy = function(){
-    rl.question('Enter the server name which deploy command:', answer =>{
-        let findGuild = new Promise((resolve, reject)=>{
-            let guild = client.guilds.cache.find(server => server.name===answer);
-            if(guild){
-                resolve(guild.id);
-            }else{
-                reject('nothing');
-            }
-        });
-        findGuild
-            .then(async guildId => {
-                await deployCommandsGuild(guildId);
-                process.exit();
-            })
-            .catch(err => {
-                console.log(err);
-                getServerAndDeploy();
-            });
+    let findGuild = new Promise((resolve, reject)=>{
+        let guilds = client.guilds.cache.toJSON();
+        console.log(client.guilds)
+        if(guilds){
+            resolve(guilds);
+        }else{
+            reject('nothing');
+        }
     });
+    findGuild
+        .then(async guilds => {
+            for(let i=0; i< guilds.length; i++){
+                let guild = guilds[i];
+                await deployCommandsGuild(guild.id);
+            }
+            process.exit();
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
-getServerAndDeploy();
+client.once('ready', client => console.log(`Logged in as ${client.user.tag}`));
+
+client.login(token).then(value => getServerAndDeploy());
         
         
 
