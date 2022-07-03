@@ -22,10 +22,10 @@ const client = new Client({
     ]
 });
 require('dotenv').config();
-const token = process.env.TOKEN;
+const token = require('./info.json')["TOKEN"];
 const fs = require('fs');
 const mongoose = require('mongoose');
-const urlDB = process.env.urlDB;
+const urlDB = require('./info.json')["urlDB"];
 mongoose.connect(urlDB).then(()=> console.log('Connected to database!')).catch(err => console.log(err));
 
 
