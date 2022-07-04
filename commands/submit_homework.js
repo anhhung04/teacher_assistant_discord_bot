@@ -1,5 +1,5 @@
 const { SlashCommandBuilder} = require('@discordjs/builders');
-const {MessageActionRow, MessageButton, Modal, TextInputComponent} = require('discord.js');
+const {MessageActionRow, MessageButton} = require('discord.js');
 const guildModel = require('../models/guild.js');
 const embed = require('../utilities/embed.js');
 const homeworkModel = require('../models/homework.js');
