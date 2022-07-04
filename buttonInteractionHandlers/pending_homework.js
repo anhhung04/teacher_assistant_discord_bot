@@ -1,37 +1,35 @@
 const homeworkModel = require('../models/homework.js');
 
 module.exports = {
-    name: 'comment_homework',
+    name: 'pending_homework',
     async execute(interaction){
         const embed = interaction.message.embeds.shift();
-        const link = interaction.fields.getTextInputValue('link_comment');
-        const comment = interaction.fields.getTextInputValue('comment');
-        
         var homeworkDB = await homeworkModel.findOne({guildId: interaction.guildId, messageId: interaction.message.id});
+        const examiner = await interaction.guild.members.cache.get(homeworkDB?.examinerId);
 
-        if(homeworkDB.examinerId!=interaction.member.id){
+        if(examiner.id!==interaction.member.id||homeworkDB?.status==='pending'){
             return interaction.reply({
-                content: 'Đã có người nhận chấm bài tập này do đó bạn không được nhận xét',
+                content: `Bài tập này đã được chấm bởi ${examiner.displayName}.`,
                 ephemeral: true
             });
         }
-        
-        homeworkDB.comment = comment;
-        homeworkDB.linkCorrection = link;
+
+        homeworkDB.status = 'pending';
+
+        homeworkDB.examinerId = interaction.member.id;
 
         await homeworkDB.save();
-        
+
         await interaction.reply({
-            content: 'Đã thêm nhận xét',
-            ephemeral: true
+            content: `Đã ghi nhận ${interaction.member.user} sẽ chấm bài tập ${homeworkDB.name} do ${homeworkDB.author} nộp.`
         });
 
         var title = embed.title.split('#')[0];
         const imageURL = embed.image?.url;
         var filesSend = [];
 
-        embed.setTitle(`(Đã nhận xét) ${title}`);
-
+        embed.setTitle(`${title} #(đang chấm bởi ${interaction.member.displayName})`).setColor('BLUE');
+        
         if(imageURL){
             embed.setImage(`attachment://${imageURL.split('/').pop()}`);
             filesSend.push(imageURL);

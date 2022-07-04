@@ -45,6 +45,14 @@ for (const file of modalFiles) {
 	client.modals.set(modal.name, modal);
 }
 
+client.buttonHandlers = new Collection();
+const buttonHandlerFiles = fs.readdirSync('./buttonInteractionHandlers').filter(file => file.endsWith('.js'));
+
+for (const file of buttonHandlerFiles) {
+	const buttonHandler = require(`./buttonInteractionHandlers/${file}`);
+	client.buttonHandlers.set(buttonHandler.name, buttonHandler);
+}
+
 
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 

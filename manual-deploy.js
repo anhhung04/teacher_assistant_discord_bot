@@ -1,6 +1,5 @@
 const deployCommandsGuild = require('./deploy-commands-guild.js');
-require('dotenv').config();
-const token = process.env.TOKEN;
+const token = require('./info.json')["TOKEN"];
 const { Client, Intents } = require('discord.js');
 const client = new Client({
     intents: [

@@ -13,10 +13,6 @@ const data = new SlashCommandBuilder()
 		.setDescription('Cài đặt kênh trả lời câu hỏi cho học sinh.')
 	)
 	.addChannelOption(opt =>
-		opt.setName('submit_channel')
-		.setDescription('Cài đặt kênh nhận và nộp bài tập')
-	)
-	.addChannelOption(opt =>
 		opt.setName('notification_channel')
 		.setDescription('Cài đặt kênh thông báo')
 	)
@@ -37,16 +33,11 @@ module.exports = {
 		const guildDB = await guildModel.findOne({guildId: interaction.guildId});
 
 		const replyChannel = interaction.options.getChannel('reply_channel');
-		const submitChannel = interaction.options.getChannel('submit_channel');
 		const notiChannel = interaction.options.getChannel('notification_channel');
 		const homeworkChannel = interaction.options.getChannel('homework_channel');
 
 		if(replyChannel){
 			guildDB.reply_channel = replyChannel.id;
-		}
-		
-		if(submitChannel){
-			guildDB.submit_channel = submitChannel.id;
 		}
 
 		if(notiChannel){

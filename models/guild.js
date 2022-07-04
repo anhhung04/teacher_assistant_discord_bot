@@ -10,7 +10,6 @@ const guildSchema = new mongoose.Schema({
         ref: 'Member'
     }],
     reply_channel: String,
-    submit_channel: String,
     noti_channel: String,
     homework_channel: String
 });
