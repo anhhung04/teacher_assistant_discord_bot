@@ -7,16 +7,18 @@ module.exports = {
         var homeworkDB = await homeworkModel.findOne({guildId: interaction.guildId, messageId: interaction.message.id});
         const examiner = await interaction.guild.members.cache.get(homeworkDB?.examinerId);
 
-        if(examiner.id!==interaction.member.id||homeworkDB?.status==='pending'){
+        if(!examiner){
+            
+            homeworkDB.status = 'pending';
+
+            homeworkDB.examinerId = interaction.member.id;
+
+        }else if(examiner.id!==interaction.member.id||homeworkDB?.status==='pending'){
             return interaction.reply({
-                content: `Bài tập này đã được chấm bởi ${examiner.displayName}.`,
+                content: `Bài tập này đã được chấm bởi ${interaction.member.displayName}.`,
                 ephemeral: true
             });
         }
-
-        homeworkDB.status = 'pending';
-
-        homeworkDB.examinerId = interaction.member.id;
 
         await homeworkDB.save();
 
