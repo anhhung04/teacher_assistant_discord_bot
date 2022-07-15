@@ -9,7 +9,7 @@ const data = new SlashCommandBuilder()
 .addStringOption(opt => opt.setName('thematic').setDescription('Chuyên đề sẽ dạy').setRequired(true).addChoices(...['cơ học', 'điện từ học', 'nhiệt học', 'quang học', 'vật lí hiện đại'].map(e => ({name: e, value:e}))))
 .addStringOption(opt => opt.setName('name').setDescription('Tên của bài học sẽ dạy').setRequired(true))
 .addIntegerOption(opt => opt.setName('index').setDescription('Thứ tự buổi dạy').setRequired(true))
-.addIntegerOption(opt => opt.setName('link').setDescription('Đường dẫn tham gia lớp học.').setRequired(true));
+.addStringOption(opt => opt.setName('link').setDescription('Đường dẫn tham gia lớp học.').setRequired(true));
 
 module.exports ={
     data: data,
