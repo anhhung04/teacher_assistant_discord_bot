@@ -28,6 +28,7 @@ module.exports = {
 			content: 'Bạn không phải admin để thực hiện lệnh này',
 			ephemeral: true
 		});
+        var components = [];
 
         await interaction.deferReply({ephemeral: true});
 
@@ -45,14 +46,19 @@ module.exports = {
 
         const options = homeworks.map(h => ({label: h.name, value: h.messageId, description: statusObj[h.status]}))
 
-        const row = new MessageActionRow()
-        .addComponents(
-            new MessageSelectMenu()
+        if(options&&options.length>0){
+            let menu = new MessageSelectMenu()
             .setCustomId('student_homework')
-            .setPlaceholder('(<=10) Bài tập gần nhất học sinh này đã nộp')
-            .addOptions(options)
-            .setMinValues(1)
-        )
+            .setPlaceholder('(<=10) Bài tập gần nhất học sinh này đã nộp');
+            
+            menu.addOptions(options).setMinValues(1);
+            let row = new MessageActionRow()
+            .addComponents(
+                menu
+            )
+            components.push(row);
+        }
+        
 
         const embed = new MessageEmbed()
         .setAuthor({name: student.displayName, iconURL: student.displayAvatarURL()})
@@ -63,7 +69,7 @@ module.exports = {
 
         const mess = await interaction.editReply({
             embeds: [embed],
-            components: [row]
+            components: components
         });
 
         const collector = await mess.createMessageComponentCollector({componentType: 'SELECT_MENU'});

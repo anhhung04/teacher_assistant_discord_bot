@@ -8,7 +8,8 @@ const data = new SlashCommandBuilder()
 .setDescription('Bắt đầu 1 buổi học')
 .addStringOption(opt => opt.setName('thematic').setDescription('Chuyên đề sẽ dạy').setRequired(true).addChoices(...['cơ học', 'điện từ học', 'nhiệt học', 'quang học', 'vật lí hiện đại'].map(e => ({name: e, value:e}))))
 .addStringOption(opt => opt.setName('name').setDescription('Tên của bài học sẽ dạy').setRequired(true))
-.addIntegerOption(opt => opt.setName('index').setDescription('Thứ tự buổi dạy').setRequired(true));
+.addIntegerOption(opt => opt.setName('index').setDescription('Thứ tự buổi dạy').setRequired(true))
+.addIntegerOption(opt => opt.setName('link').setDescription('Đường dẫn tham gia lớp học.').setRequired(true));
 
 module.exports ={
     data: data,
@@ -17,11 +18,6 @@ module.exports ={
 			content: 'Bạn không phải admin để thực hiện lệnh này',
 			ephemeral: true
 		});
-        
-        if(!interaction.member.voice?.channel) return interaction.reply({
-            content: 'Tham gia một kênh trò chuyện bất kỳ để thực hiện lệnh',
-            ephemeral: true
-        });
 
         await interaction.deferReply({ephemeral: true});
 
@@ -30,6 +26,7 @@ module.exports ={
         const topicRole = await interaction.guild.roles.cache.find(role => role.name===topic);
         const index = await interaction.options.getInteger('index'); 
         const name = await interaction.options.getString('name');
+        const link = await interaction.options.getString('link');
 
         if(!topicRole) return interaction.editReply({
             content: 'Nhập sai định dạng chuyên đề, hãy sử dụng lại lệnh.',
@@ -42,41 +39,42 @@ module.exports ={
         });
 
         const notiChannel = await interaction.guild.channels.fetch(guildDB.noti_channel);
-        const studyChannel = await interaction.guild.channels.create(`${topic}-${index}`,{
-            type: 'GUILD_VOICE',
-            permissionOverwrites:[{
-                id: interaction.guild.roles.everyone,    
-                deny: ['VIEW_CHANNEL', 'CONNECT']
-            },{
-                id: topicRole,
-                allow: ['VIEW_CHANNEL', 'CONNECT']
-            }],
-            bitrate: 96000
-        });
-        const invite = await studyChannel.createInvite({reason: 'Bấm để tham gia'});
+       
         const embedSend = new MessageEmbed()
         .setTimestamp()
         .setColor('BLUE')
         .setAuthor({name: interaction.member.displayName, iconURL: interaction.member.displayAvatarURL()})
         .setTitle(`Lớp học chuyên đề ${topic} đã bắt đầu`)
-        .addField(`${interaction.member.displayName} phụ trách:\n${name}`, hyperlink('Bấm để tham gia', invite));
+        .addField(`${interaction.member.displayName} phụ trách:\n${name}`, hyperlink('Bấm để tham gia', link));
+       
+        let role = await interaction.guild.roles.cache.find(r => r.name === topic);
+        
+        const messNoti = await notiChannel.send({
+            content: `${role}`,
+            embeds: [embedSend],
+            components:[
+                {
+                    type: 'ACTION_ROW',
+                    components:[
+                        {
+                            type: 'BUTTON',
+                            customId: 'join_class',
+                            label: 'Điểm danh',
+                            style: 'PRIMARY'
+                        }
+                    ]
+                }
+            ]
+        });
 
         await classModel.create({
             guildId: interaction.guildId,
             topic: topic,
             index: index,
             teacher: interaction.member.displayName,
-            roomId: studyChannel.id
+            roomId: messNoti.id
         });
 
-        let role = await interaction.guild.roles.cache.find(r => r.name === topic);
-        
-        await notiChannel.send({
-            content: `${role}`,
-            embeds: [embedSend]
-        });
-
-        await interaction.member.voice.setChannel(studyChannel);
 
         return interaction.editReply({
             content: 'Đã khởi tạo lớp học',
