@@ -25,7 +25,7 @@ module.exports = {
             });
         }
 
-        const {members, timeInRoom, teacher} = classDB;
+        const {members, teacher} = classDB;
        
         const numOfEmbeds = Math.ceil(members.length/25);
 
@@ -44,7 +44,7 @@ module.exports = {
             for(let k=0; k< membersArr.length; k++){
                 fields.push({
                     name: membersArr[k].name,
-                    value: timeInRoomArr[k].toString()+ ' minutes',
+                    value: '\u200B',
                     inline: true
                 })
             }
