@@ -13,9 +13,15 @@ module.exports = {
             });
         }
 
-        var classDB =  classModel.findOneAndUpdate({guildId: interaction.guildId, roomId: interaction.message.id});
+        var classDB = await classModel.findOne({guildId: interaction.guildId, roomId: interaction.message.id});
 
-        classDB.members.push(memberDB._id);
+        if(classDB.members&&!classDB.members?.includes(memberDB._id)){
+            classDB.members.push(memberDB._id);
+        }else{
+            classDB.members = [memberDB._id]
+        }
+
+        
         const index = memberDB.subjects.indexOf(classDB.topic);
 
         if(index===-1){
